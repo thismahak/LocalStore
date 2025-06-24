@@ -17,7 +17,7 @@ dotenv.config();
 dbConnect();
 
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://local-store-c3qa.vercel.app'], // allow both dev & deployed frontend
+  origin: ['http://localhost:3000', 'https://local-store-6jq5.vercel.app'], // allow both dev & deployed frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true,
 }));
