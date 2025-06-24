@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import ProductCard from '../components/ProductCard';
-import './HomePage.css'; // Import custom styles for this page
+import './HomePage.css';
+import API from '../api'; // Use the configured axios instance
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -9,13 +9,13 @@ const HomePage = () => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    axios
-      .get('http://localhost:5000/api/products')  // Adjust URL if necessary
+    API.get('/products')
       .then((response) => {
         setProducts(response.data);
+        console.log('Products loaded:', response.data);
         setLoading(false);
       })
-      .catch((err) => {
+      .catch(() => {
         setError('Failed to load products.');
         setLoading(false);
       });

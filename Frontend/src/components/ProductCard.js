@@ -1,50 +1,34 @@
 import React from 'react';
-import './ProductCard.css'; // Import custom styles for the product card
+import './ProductCard.css';
 import { useNavigate } from 'react-router-dom';
+import API from '../api';
 
 const ProductCard = ({ product }) => {
-  const navigate = useNavigate(); 
-  const { name, price, image, description , _id} = product;
+  const navigate = useNavigate();
+  const { name, price, image, description, _id } = product;
 
-    // Logic to add the product to the cart
-    const handleAddToCart = async () => {
-      try {
-        const token = localStorage.getItem('token'); // Ensure the user is logged in
-        if (!token) {
-          alert("Please log in to add items to the cart.");
-          return;
-        }
-    
-        const response = await fetch('http://localhost:5000/api/cart', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ productId: _id, quantity: 1 }),
-        });
-    
-        if (!response.ok) {
-          throw new Error('Failed to add product to cart');
-        }
-    
-        
-        alert(`Added ${name} to the cart.`);
-      } catch (error) {
-        console.error(error);
-        alert('An error occurred while adding to cart.');
+  const handleAddToCart = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert("Please log in to add items to the cart.");
+        return;
       }
-    };
-    
-    
-  
+
+      await API.post('/cart', {
+        productId: _id,
+        quantity: 1,
+      });
+
+      alert(`Added ${name} to the cart.`);
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred while adding to cart.');
+    }
+  };
 
   const handleViewDetails = () => {
-    // Logic to view the product details (can route to product detail page)
-    
-      navigate(`/product/${_id}`);
-    
-  
+    navigate(`/product/${_id}`);
   };
 
   return (

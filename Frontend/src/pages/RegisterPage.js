@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+
 import { useNavigate } from 'react-router-dom';
 import './RegisterPage.css'; // Import the custom CSS for this page
-
+import API from '../api'; // Adjust the import path as necessary
 const RegisterPage = ({setUser}) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -17,7 +17,7 @@ const RegisterPage = ({setUser}) => {
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/register', { name, email, password });
+      const response = await API.post('/users/register', { name, email, password });
       localStorage.setItem('token', response.data.token); // Save JWT token after successful registration
       setUser({ name: response.data.name, email: response.data.email });
       navigate('/login'); // Redirect to home page after successful registration

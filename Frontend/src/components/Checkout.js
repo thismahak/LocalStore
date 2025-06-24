@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import API from '../api'; // ✅ Using axios instance
 import { useNavigate } from 'react-router-dom';
 import './Checkout.css';
 
@@ -21,12 +21,12 @@ const CheckoutPage = () => {
   const handlePlaceOrder = async () => {
     try {
       const token = localStorage.getItem('token');
-  
-      // Fetch cart items
-      const response = await axios.get('http://localhost:5000/api/cart', {
+
+      // ✅ Fetch cart items using API instance
+      const response = await API.get('/cart', {
         headers: { Authorization: `Bearer ${token}` },
       });
-  
+
       const cartItems = response.data?.items.map(item => ({
         product: item.productId._id,
         name: item.productId.name,
@@ -34,15 +34,15 @@ const CheckoutPage = () => {
         price: Number(item.productId.price),
         qty: Number(item.quantity),
       })) || [];
-  
+
       if (cartItems.length === 0) {
         alert('Your cart is empty. Add items to place an order.');
         return;
       }
-  
-      // Place order
-      const orderResponse = await axios.post(
-        'http://localhost:5000/api/orders',
+
+      // ✅ Place order using API
+      const orderResponse = await API.post(
+        '/orders',
         {
           orderItems: cartItems,
           shippingAddress: {
@@ -57,15 +57,15 @@ const CheckoutPage = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-  
+
       if (orderResponse.status === 201) {
         console.log('Order Response:', orderResponse.data);
 
-        const clearCartResponse = await axios.delete('http://localhost:5000/api/cart', {
+        // ✅ Clear cart
+        const clearCartResponse = await API.delete('/cart', {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-  
         if (clearCartResponse.status === 200) {
           console.log('Cart Clear Response:', clearCartResponse.data);
           alert('Order placed successfully! Your cart has been cleared.');
@@ -84,8 +84,6 @@ const CheckoutPage = () => {
       alert('Failed to place order. Please try again.');
     }
   };
-  
-  
 
   return (
     <div className="checkout-page">

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import './LoginPage.css'; // Import the custom CSS for this page
+import './LoginPage.css';
+import API from '../api'; // Use your configured axios instance
 
-const LoginPage = ({setUser}) => {
+const LoginPage = ({ setUser }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -12,16 +12,16 @@ const LoginPage = ({setUser}) => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users/login', { email, password });
-      localStorage.setItem('token', response.data.token); // Save JWT token after successful login
+      const response = await API.post('/users/login', { email, password });
+      localStorage.setItem('token', response.data.token); // Save JWT token
       setUser({ name: response.data.name, email: response.data.email });
-      navigate('/'); // Redirect to home page after successful login
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
+    } finally {
       setLoading(false);
     }
   };

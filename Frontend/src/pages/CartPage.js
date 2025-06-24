@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import './CartPage.css'; // Import custom styles
+import './CartPage.css';
 import { useNavigate } from 'react-router-dom';
+import API from '../api'; // centralized axios instance
 
 const CartPage = () => {
   const navigate = useNavigate();
@@ -9,14 +9,11 @@ const CartPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [removingItem, setRemovingItem] = useState(false);
+
   useEffect(() => {
     const fetchCart = async () => {
       try {
-        const token = localStorage.getItem('token');
-        
-        const response = await axios.get('http://localhost:5000/api/cart', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await API.get('/cart');
         setCart(response.data);
         setLoading(false);
       } catch (err) {
@@ -29,28 +26,21 @@ const CartPage = () => {
 
   const handleRemoveItem = async (productId) => {
     setRemovingItem(true);
-    console.log("Product ID to remove:", productId);
     try {
-      
-      const token = localStorage.getItem('token');
-      const {data} = await axios.delete(`http://localhost:5000/api/cart/${productId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      
+      const { data } = await API.delete(`/cart/${productId}`);
       setCart(data);
       alert('Item removed from cart!');
     } catch (err) {
       console.error('Error removing item from cart:', err);
-    alert('Failed to remove item from cart');
-    }
-    finally {
+      alert('Failed to remove item from cart');
+    } finally {
       setRemovingItem(false);
     }
   };
 
   if (loading) return <div className="loading">Loading your cart...</div>;
   if (error) return <div className="error">{error}</div>;
-  
+
   return (
     <div className="cart-page">
       <h1>Your Shopping Cart</h1>
@@ -81,9 +71,12 @@ const CartPage = () => {
           ))}
           <div className="cart-total">
             <h3>Total: ${cart.totalPrice}</h3>
-            <button className="checkout-btn"
-            onClick={() => navigate('/checkout')}
-            >Proceed to Checkout</button>
+            <button
+              className="checkout-btn"
+              onClick={() => navigate('/checkout')}
+            >
+              Proceed to Checkout
+            </button>
           </div>
         </div>
       )}

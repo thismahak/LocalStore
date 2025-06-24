@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import './OrderPage.css';
+import API from '../api'; // Use your axiosInstance
 
 const OrderPage = () => {
   const [orders, setOrders] = useState([]);
@@ -10,17 +10,15 @@ const OrderPage = () => {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/orders/myorders', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const response = await API.get('/orders/myorders'); // no need for token manually
         setOrders(response.data);
-        setLoading(false);
       } catch (err) {
         setError('Failed to fetch orders');
+      } finally {
         setLoading(false);
       }
     };
+
     fetchOrders();
   }, []);
 
@@ -42,13 +40,13 @@ const OrderPage = () => {
               <p><strong>Status:</strong> {order.shippingStatus || 'Pending'}</p>
               <div className="order-products">
                 <h4>Products:</h4>
-                {order.orderItems.map((item) => (
-                  <div key={item.product._id} className="order-product">
-                    <img src={item.product.image} alt={item.product.name} className="order-product-image" />
+                {order.orderItems.map((item, index) => (
+                  <div key={index} className="order-product">
+                    <img src={item.product?.image} alt={item.product?.name} className="order-product-image" />
                     <div>
-                      <p><strong>{item.product.name}</strong></p>
+                      <p><strong>{item.product?.name}</strong></p>
                       <p>Quantity: {item.qty}</p>
-                      <p>Price: ${item.product.price}</p>
+                      <p>Price: ${item.product?.price}</p>
                     </div>
                   </div>
                 ))}

@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate} from 'react-router-dom';
 import './ProfilePage.css'
 import { useState , useEffect } from 'react';
+import API from '../api';
 const ProfilePage = ({ user }) => {
     const [profile, setProfile] = useState(null);
     const [error, setError] = useState('');
@@ -15,23 +16,14 @@ const ProfilePage = ({ user }) => {
           return;
         }
         try {
-          const response = await fetch('http://localhost:5000/api/users/profile', {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          if (!response.ok) {
-            setError('Failed to fetch profile');
-            navigate('/login');
-            return;
-          }
-          const data = await response.json();
-          setProfile(data);
-        } catch {
-          setError('Something went wrong');
-        }
-      };
+        const response = await API.get('/users/profile');
+        setProfile(response.data);
+      } catch (err) {
+        setError(err.response?.data?.message || 'Something went wrong');
+        navigate('/login');
+      }
+    };
+
       fetchProfile();
     }, [navigate]);
   

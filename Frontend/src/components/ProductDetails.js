@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import './ProductDetails.css';
+import API from '../api';
 
 const ProductDetails = () => {
-  const { id } = useParams(); // Get product ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const ProductDetails = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const response = await API.get(`/products/${id}`);
         setProduct(response.data);
       } catch (err) {
         setError('Failed to fetch product details.');
@@ -27,33 +27,23 @@ const ProductDetails = () => {
 
   const handleAddToCart = async () => {
     try {
-      const token = localStorage.getItem('token'); // Ensure the user is logged in
+      const token = localStorage.getItem('token');
       if (!token) {
         alert("Please log in to add items to the cart.");
         return;
       }
-  
-      const response = await fetch('http://localhost:5000/api/cart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ productId: product._id, quantity: 1 }),
+
+      await API.post('/cart', {
+        productId: product._id,
+        quantity: 1,
       });
-  
-      if (!response.ok) {
-        throw new Error('Failed to add product to cart');
-      }
-  
-      
+
       alert(`Added ${product.name} to the cart.`);
     } catch (error) {
       console.error(error);
       alert('An error occurred while adding to cart.');
     }
   };
-  
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
