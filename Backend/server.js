@@ -16,7 +16,11 @@ const { notFound, errorHandler } = require('./middlewares/errorMiddlewares');
 dotenv.config();
 dbConnect();
 
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://local-store-c3qa.vercel.app'], // allow both dev & deployed frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
 app.use(express.json());
 app.use(morgan('dev')); // Log HTTP requests in development
 app.use(express.urlencoded({ extended: true }));
